@@ -28,7 +28,10 @@ public class AdminController : ControllerBase
         if (!result.Succeeded)
             return BadRequest(result.Errors);
 
-        await _userManager.AddToRoleAsync(user, "Employee");
+        var validRoles = new[] { "Admin", "Employee" };
+        var assignedRole = validRoles.Contains(role) ? role : "Employee";
+
+        await _userManager.AddToRoleAsync(user, assignedRole);
         return Ok("User created.");
     }
 

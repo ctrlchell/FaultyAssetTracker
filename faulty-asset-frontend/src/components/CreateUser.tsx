@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import api from '../services/api';
-import { toast } from 'react-toastify';
+import { useState } from "react";
+import api from "../services/api";
+import { toast } from "react-toastify";
 
 type CreateUserForm = {
   email: string;
@@ -9,9 +9,9 @@ type CreateUserForm = {
 };
 
 const initialForm: CreateUserForm = {
-  email: '',
-  password: '',
-  role: 'Employee',
+  email: "",
+  password: "",
+  role: "Employee",
 };
 
 function CreateUser() {
@@ -36,10 +36,9 @@ function CreateUser() {
       setForm(initialForm);
     } catch (error: any) {
       const data = error.response?.data;
-      const message =
-        Array.isArray(data)
-          ? data.map((e: any) => e.description ?? e).join(', ')
-          : data?.title || data?.message || data || 'Failed to create user.';
+      const message = Array.isArray(data)
+        ? data.map((e: any) => e.description ?? e).join(", ")
+        : data?.title || data?.message || data || "Failed to create user.";
       toast.error(String(message));
     } finally {
       setIsSubmitting(false);
@@ -99,8 +98,7 @@ function CreateUser() {
               id="cu-role"
               value={form.role}
               onChange={handleChange}
-              className="peer input-field appearance-none cursor-pointer"
-            >
+              className="peer input-field appearance-none cursor-pointer">
               <option value="Employee">Employee</option>
               <option value="Admin">Admin</option>
             </select>
@@ -112,9 +110,8 @@ function CreateUser() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-primary disabled:bg-gray-700 py-3 transition-all active:scale-[0.98] cursor-pointer text-background/80 hover:bg-background/50 hover:border-primary duration-300 font-semibold hover:text-secondary px-4 rounded-lg border border-transparent"
-          >
-            {isSubmitting ? 'Creating...' : 'Create User'}
+            className="bg-primary disabled:bg-gray-700 py-3 transition-all active:scale-[0.98] cursor-pointer text-background/80 hover:bg-background/50 hover:border-primary duration-300 font-semibold hover:text-secondary px-4 rounded-lg border border-transparent">
+            {isSubmitting ? "Creating..." : "Create User"}
           </button>
         </form>
       </div>
@@ -122,12 +119,25 @@ function CreateUser() {
       {/* Info callout */}
       <div className="mt-6 p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl">
         <p className="text-sm text-amber-400">
-          <strong>Note:</strong> The new user will be assigned the{' '}
+          <strong>Note:</strong> The new user will be assigned the{" "}
           <span className="font-mono text-xs bg-amber-500/10 px-1 py-0.5 rounded">
             Employee
-          </span>{' '}
+          </span>{" "}
           role by default. Admins can change this later if needed.
         </p>
+      </div>
+
+      <div className="mt-6 p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl space-y-1">
+        <p className="text-sm text-amber-400 font-semibold">
+          Password Requirements:
+        </p>
+        <ul className="text-sm text-amber-400/80 list-disc list-inside space-y-0.5">
+          <li>At least 6 characters long</li>
+          <li>Must contain a number (0–9)</li>
+          <li>Must contain a special character (e.g. !, @, #)</li>
+          <li>Must contain an uppercase letter</li>
+          <li>Must contain a lowercase letter</li>
+        </ul>
       </div>
     </section>
   );
