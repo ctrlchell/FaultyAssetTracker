@@ -31,6 +31,15 @@ type CreateAssetProps = {
   onCreated?: () => void;
 };
 
+type InventoryAsset = {
+  category: string;
+  assetName: string;
+  serialNo: string;
+  assetTag: string;
+  branch: string;
+  vendor: string;
+};
+
 const vendorOptions = [
   "Chams Access",
   "Pajuno Development Company",
@@ -67,6 +76,7 @@ const createInitialForm = (): AssetForm => ({
 function CreateAsset({ onCreated }: CreateAssetProps) {
   const [form, setForm] = useState<AssetForm>(createInitialForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingInventory, setIsLoadingInventory] = useState(false);
   const [receivedByOptions, setReceivedByOptions] = useState<string[]>([]);
 
   useEffect(() => {
@@ -115,6 +125,40 @@ function CreateAsset({ onCreated }: CreateAssetProps) {
       toast.error(message);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleFetchFromInventory = async () => {
+    const assetTag = form.assetTag.trim();
+
+    if (!assetTag) {
+      toast.error("Enter an Asset Tag to fetch from inventory.");
+      return;
+    }
+
+    setIsLoadingInventory(true);
+
+    try {
+      const response = await api.get<InventoryAsset>(
+        `/Inventory/${encodeURIComponent(assetTag)}`,
+      );
+      const inventoryAsset = response.data;
+
+      setForm((prev) => ({
+        ...prev,
+        category: inventoryAsset.category,
+        assetName: inventoryAsset.assetName,
+        serialNo: inventoryAsset.serialNo,
+        assetTag: inventoryAsset.assetTag,
+        branch: inventoryAsset.branch,
+        vendor: inventoryAsset.vendor,
+      }));
+
+      toast.success("Inventory data loaded.");
+    } catch {
+      toast.error("Inventory asset not found for that tag.");
+    } finally {
+      setIsLoadingInventory(false);
     }
   };
 
@@ -192,6 +236,13 @@ function CreateAsset({ onCreated }: CreateAssetProps) {
           />
           <label className="floating-label">Asset Tag</label>
         </div>
+        <button
+          type="button"
+          onClick={handleFetchFromInventory}
+          disabled={isLoadingInventory}
+          className="h-14 rounded-lg border border-secondary/50 text-secondary hover:bg-secondary/10 disabled:opacity-60 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium">
+          {isLoadingInventory ? "Fetching..." : "Fetch from Inventory"}
+        </button>
         <div className="relative h-14">
           <input
             name="branch"
